@@ -9,7 +9,7 @@
 #import "ZYViewController.h"
 #import "ZYHero.h"
 
-@interface ZYViewController ()<UITableViewDataSource>
+@interface ZYViewController ()<UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong)NSArray *heros;
 @property(nonatomic, strong)UITableView *tableVlew;
 @end
@@ -29,11 +29,10 @@
     //2.设置样式
     [self.tableVlew setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
     //3.设置行高
-    self.tableVlew.rowHeight = 100;
+    self.tableVlew.rowHeight = 60;
     //4.添加head/ footer
     self.tableVlew.tableHeaderView = [[UISwitch alloc]init];
     self.tableVlew.tableFooterView = [UIButton buttonWithType:UIButtonTypeContactAdd];
-    
 }
 
 #pragma mark - tabelView数据源方法
@@ -46,18 +45,44 @@
 {
     ZYHero *hero = self.heros[indexPath.row];
     
-    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"what"];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"waht"];
+    }
+    
+    
     cell.textLabel.text = hero.name;
     cell.detailTextLabel.text = hero.intro;
     NSString *imgString = hero.icon;
     cell.imageView.image = [UIImage imageNamed:imgString];
-//    cell.backgroundColor = [UIColor redColor];
     UIImageView *imageView = [[UIImageView alloc]init];
     imageView.image = [UIImage imageNamed:@"bg"];
+    
     
     //设置背景图片
     cell.backgroundView = imageView;
     return cell;
+}
+
+#pragma mark - 代理方法
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ZYHero *hero = self.heros[indexPath.row];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"难道美丽也是一种罪?" message:@"罗特斯" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"勇士!" style:UIAlertActionStyleCancel handler:nil];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"DNF" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        //这里要拿到文本框中的内容,  并且显示到cell上
+        UITextField *textField =  alertController.textFields.firstObject;
+        hero.name = textField.text;
+        [self.tableVlew reloadData];
+    }];
+    [alertController addAction:cancelAction];
+    [alertController addAction:okAction];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.text = hero.name;
+    }];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 //隐藏状态栏
@@ -89,6 +114,7 @@
         _tableVlew = [[UITableView alloc]init];
         _tableVlew.frame = self.view.bounds;
         self.tableVlew.dataSource = self;
+        self.tableVlew.delegate = self;
         self.tableVlew = _tableVlew;
         [self.view addSubview:_tableVlew];
     }
