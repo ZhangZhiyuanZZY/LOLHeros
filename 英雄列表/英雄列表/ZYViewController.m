@@ -21,13 +21,18 @@
     [self setupSeparator];
 }
 
-//设置分割线样式
+//设置tableView的属性样式
 - (void)setupSeparator
 {
     //1.设置颜色
     [self.tableVlew setSeparatorColor:[UIColor blueColor]];
     //2.设置样式
     [self.tableVlew setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+    //3.设置行高
+    self.tableVlew.rowHeight = 100;
+    //4.添加head/ footer
+    self.tableVlew.tableHeaderView = [[UISwitch alloc]init];
+    self.tableVlew.tableFooterView = [UIButton buttonWithType:UIButtonTypeContactAdd];
     
 }
 
@@ -46,6 +51,12 @@
     cell.detailTextLabel.text = hero.intro;
     NSString *imgString = hero.icon;
     cell.imageView.image = [UIImage imageNamed:imgString];
+//    cell.backgroundColor = [UIColor redColor];
+    UIImageView *imageView = [[UIImageView alloc]init];
+    imageView.image = [UIImage imageNamed:@"bg"];
+    
+    //设置背景图片
+    cell.backgroundView = imageView;
     return cell;
 }
 
